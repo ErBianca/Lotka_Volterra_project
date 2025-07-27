@@ -50,12 +50,12 @@ int main() {
   }
 
   // Creazione oggetto Simulation con il costruttore parametrico
-  pf::Simulation simulation1(newA1, newB1, newC1, newD1, newx_01, newy_01);
+  pf::Simulation simulation(newA1, newB1, newC1, newD1, newx_01, newy_01);
 
   // Scrive le coordinate di equilibrio su file
-  simulation1.e2_x();
-  simulation1.e2_y();
-  simulation1.writeCoordinates();
+  simulation.e2_x();
+  simulation.e2_y();
+  simulation.writeCoordinates();
 
   // Imposta la durata della simulazione
   std::cout << "What is the duration of the simulation?\n";
@@ -63,9 +63,9 @@ int main() {
   std::cin >> duration;
 
   int steps = static_cast<int>(duration / 0.001);
-  simulation1.initializeVectors();
-  simulation1.runSimulation(steps);
-  simulation1.writeResults();
+  simulation.initializeVectors();
+  simulation.runSimulation(steps);
+  simulation.writeResults();
 
   std::cout << "Simulation completed, results written in ValueList.txt and in e_2Coordinates.txt\n";
   std::cout << "If one of the species got extinct the value of the integral is undefined,\n"

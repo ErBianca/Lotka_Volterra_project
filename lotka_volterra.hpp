@@ -7,20 +7,28 @@
 
 namespace pf {
 
+
+  // Struct per raggruppare i dati della simulazione
+struct SimulationData {
+  std::vector<double> x;
+  std::vector<double> y;
+  std::vector<double> H;
+};
+
 class Simulation {
- 
- public:
 
- // parametric constructor
+public:
+  // parametric constructor
 
- Simulation(double newA = 0.0, double newB = 0.0, double newC = 0.0, double newD = 0.0,
-             double newx_0 = 0.0, double newy_0 = 0.0, double new_dt = 0.001);
+  Simulation(double newA = 0.0, double newB = 0.0, double newC = 0.0,
+             double newD = 0.0, double newx_0 = 0.0, double newy_0 = 0.0,
+             double new_dt = 0.001);
 
   // methods to get elements inside the vectors (useful for the tests)
-  const std::vector<double>& getx() const;
-  const std::vector<double>& gety() const;
-  const std::vector<double>& getH() const;
-  const std::vector<double>& gett() const;
+  const std::vector<double> &getx() const;
+  const std::vector<double> &gety() const;
+  const std::vector<double> &getH() const;
+  const std::vector<double> &gett() const;
 
   // method to get the coordinates of the point of equilibrium e_2
   double e2_x();
@@ -41,21 +49,20 @@ class Simulation {
   // writing in a txt file the values inside the vectors x,y,H and t
   void writeResults();
 
-  private:
-  double A{};    
-  double B{};    
-  double C{};    
-  double D{};   
-  double x_0{};  
-  double y_0{};  
+private:
+  double A{};
+  double B{};
+  double C{};
+  double D{};
+  double x_0{};
+  double y_0{};
   double dt{0.001};
 
-  std::vector<double> x = {};
-  std::vector<double> y = {};
-  std::vector<double> H = {};
+  SimulationData data{};
   std::vector<double> t = {};
-
 };
-}  // namespace pf
+
+
+} // namespace pf
 
 #endif
