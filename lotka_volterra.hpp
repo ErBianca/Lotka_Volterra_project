@@ -7,8 +7,7 @@
 
 namespace pf {
 
-
-  // Struct per raggruppare i dati della simulazione
+// Struct per raggruppare i dati della simulazione
 struct SimulationData {
   std::vector<double> x;
   std::vector<double> y;
@@ -30,6 +29,8 @@ public:
   const std::vector<double> &getH() const;
   const std::vector<double> &gett() const;
 
+  void setUseRK4(bool flag);
+
   // method to get the coordinates of the point of equilibrium e_2
   double e2_x();
   double e2_y();
@@ -40,8 +41,11 @@ public:
   // method to initialize the vector x,y,H and t with the initial values
   void initializeVectors();
 
-  // method to calculate the new values of x,y and H after dt
+  // method to calculate the new values of x,y and H after dt (Euler method)
   void evolve();
+
+  // method to calculate the new values of x,y and H after dt (RK4 method)
+  void evolveRK4();
 
   // method to repete the simulation n times to obtain n+1 triples of values
   void runSimulation(int n);
@@ -58,10 +62,11 @@ private:
   double y_0{};
   double dt{0.001};
 
+  bool useRK4 = false;
+
   SimulationData data{};
   std::vector<double> t = {};
 };
-
 
 } // namespace pf
 

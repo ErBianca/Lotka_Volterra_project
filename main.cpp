@@ -6,11 +6,11 @@
 int main() {
   // Inserimento parametri A, B, C, D
   std::cout << "Insert the parameters A, B, C and D separated by a space\n";
-  double newA1, newB1, newC1, newD1;
-  bool valid_input1 = false;
+  double newA, newB, newC, newD;
+  bool valid_input = false;
 
-  while (!valid_input1) {
-    std::cin >> newA1 >> newB1 >> newC1 >> newD1;
+  while (!valid_input) {
+    std::cin >> newA >> newB >> newC >> newD;
 
     if (std::cin.fail()) {
       std::cin.clear();
@@ -19,39 +19,50 @@ int main() {
       continue;
     }
 
-    if (newA1 <= 0 || newB1 <= 0 || newC1 <= 0 || newD1 <= 0) {
+    if (newA <= 0 || newB <= 0 || newC <= 0 || newD <= 0) {
       std::cout << "Error: all parameters must be positive!\n";
     } else {
-      valid_input1 = true;
+      valid_input = true;
     }
   }
 
   // Inserimento valori iniziali x0 e y0
   std::cout << "Write the initial number of prey (x_0) and the initial number "
                "of predators (y_0) separated by a space\n";
-  double newx_01, newy_01;
+  double newx_0, newy_0;
   bool valid_input2 = false;
 
   while (!valid_input2) {
-    std::cin >> newx_01 >> newy_01;
+    std::cin >> newx_0 >> newy_0;
 
     if (std::cin.fail()) {
       std::cin.clear();
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-      std::cout << "Error: please insert only numbers for the initial values!\n";
+      std::cout
+          << "Error: please insert only numbers for the initial values!\n";
       continue;
     }
 
-    if (newx_01 <= 0 || newy_01 <= 0) {
+    if (newx_0 <= 0 || newy_0 <= 0) {
       std::cout << "Error: all parameters must be positive!\n";
     } else {
       valid_input2 = true;
     }
   }
 
-  // Creazione oggetto Simulation con il costruttore parametrico
-  pf::Simulation simulation(newA1, newB1, newC1, newD1, newx_01, newy_01);
+  // Scelta del metodo di integrazione
+  std::cout << "Choose integration method:\n";
+  std::cout << "1 - Euler method\n";
+  std::cout << "2 - Runge-Kutta 4th order (RK4)\n";
+  int method_choice;
+  std::cin >> method_choice;
 
+  // Creazione oggetto Simulation con il costruttore parametrico
+  pf::Simulation simulation(newA, newB, newC, newD, newx_0, newy_0);
+
+  if (method_choice == 2) {
+    simulation.setUseRK4(true);
+  }
   // Scrive le coordinate di equilibrio su file
   simulation.e2_x();
   simulation.e2_y();
@@ -67,8 +78,10 @@ int main() {
   simulation.runSimulation(steps);
   simulation.writeResults();
 
-  std::cout << "Simulation completed, results written in ValueList.txt and in e_2Coordinates.txt\n";
-  std::cout << "If one of the species got extinct the value of the integral is undefined,\n"
+  std::cout << "Simulation completed, results written in ValueList.txt and in "
+               "e_2Coordinates.txt\n";
+  std::cout << "If one of the species got extinct the value of the integral is "
+               "undefined,\n"
                "it has been arbitrarily set to 0\n";
 
   return 0;

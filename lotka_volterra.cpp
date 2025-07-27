@@ -7,7 +7,9 @@ Simulation::Simulation(double newA, double newB, double newC, double newD,
                        double newx_0, double newy_0, double new_dt)
     : A(newA), B(newB), C(newC), D(newD), x_0(newx_0), y_0(newy_0), dt(new_dt) {}
 
-
+void pf::Simulation::setUseRK4(bool flag) {
+  useRK4 = flag;
+}
 
 // metodo per ottenere il vettore dei tempi
 const std::vector<double>& Simulation::gett() const { return t; }
@@ -68,10 +70,48 @@ void Simulation::evolve() {
   y_0 = y_i;
 }
 
+void pf::Simulation::evolveRK4() {
+  double x_rel = x_0 / e2_x();
+  double y_rel = y_0 / e2_y();
+
+  auto f = [this](double x, double y) {
+    return std::make_pair((A - B * y) * x, (C * x - D) * y);
+  };
+
+  auto [k1x, k1y] = f(x_rel, y_rel);
+  auto [k2x, k2y] = f(x_rel + 0.5 * dt * k1x, y_rel + 0.5 * dt * k1y);
+  auto [k3x, k3y] = f(x_rel + 0.5 * dt * k2x, y_rel + 0.5 * dt * k2y);
+  auto [k4x, k4y] = f(x_rel + dt * k3x, y_rel + dt * k3y);
+
+  double x_rel_next = x_rel + (dt / 6.0) * (k1x + 2*k2x + 2*k3x + k4x);
+  double y_rel_next = y_rel + (dt / 6.0) * (k1y + 2*k2y + 2*k3y + k4y);
+
+  double x_next = x_rel_next * e2_x();
+  double y_next = y_rel_next * e2_y();
+
+  if (x_next < 1e-6) x_next = 0;
+  if (y_next < 1e-6) y_next = 0;
+
+  double H_next = (x_next < 1e-6 || y_next < 1e-6) ?
+      0 : -D * log(x_next) + C * x_next + B * y_next - A * log(y_next);
+
+  data.x.push_back(x_next);
+  data.y.push_back(y_next);
+  data.H.push_back(H_next);
+
+  x_0 = x_next;
+  y_0 = y_next;
+}
+
+
 // metodo per ripetere la simulazione n volte per ottenere n+1 triple di valori
 void Simulation::runSimulation(int n) {
   for (int i = 1; i <= n; ++i) {
-    evolve();
+   if (useRK4) {
+      evolveRK4();
+    } else {
+      evolve();
+    }
     t.push_back(dt * i);
   }
 }
