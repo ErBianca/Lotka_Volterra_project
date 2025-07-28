@@ -47,19 +47,9 @@ void Simulation::evolve() {
   double y_i = y_i_rel * e2_y();
   double H_i;
 
-  // controllo del caso in cui una specie si estingue, impostando un valore molto piccolo
-  if (x_i < 1e-6) {
-    x_i = 0;
-  }
-  if (y_i < 1e-6) {
-    y_i = 0;
-  }
-
-  // imposto l'integrale a 0 nel caso di estinzione di una specie
-  if ((x_i < 1e-6) || (y_i < 1e-6)) {
-    H_i = 0;
-  } else {
-    H_i = -D * log(x_i) + C * x_i + B * y_i - A * log(y_i);
+  if (x_i <= 0.0 || y_i <= 0.0) {
+    std::cerr << "Errore: una delle due specie si è estinta. Simulazione interrotta.\n";
+    return;
   }
 
   data.x.push_back(x_i);
@@ -71,29 +61,31 @@ void Simulation::evolve() {
 }
 
 void pf::Simulation::evolveRK4() {
-  double x_rel = x_0 / e2_x();
-  double y_rel = y_0 / e2_y();
+  auto dxdt = [this](double x, double y) { return A * x - B * x * y; };
+  auto dydt = [this](double x, double y) { return C * x * y - D * y; };
 
-  auto f = [this](double x, double y) {
-    return std::make_pair((A - B * y) * x, (C * x - D) * y);
-  };
+  double k1x = dxdt(x_0, y_0);
+  double k1y = dydt(x_0, y_0);
 
-  auto [k1x, k1y] = f(x_rel, y_rel);
-  auto [k2x, k2y] = f(x_rel + 0.5 * dt * k1x, y_rel + 0.5 * dt * k1y);
-  auto [k3x, k3y] = f(x_rel + 0.5 * dt * k2x, y_rel + 0.5 * dt * k2y);
-  auto [k4x, k4y] = f(x_rel + dt * k3x, y_rel + dt * k3y);
+  double k2x = dxdt(x_0 + 0.5 * dt * k1x, y_0 + 0.5 * dt * k1y);
+  double k2y = dydt(x_0 + 0.5 * dt * k1x, y_0 + 0.5 * dt * k1y);
 
-  double x_rel_next = x_rel + (dt / 6.0) * (k1x + 2*k2x + 2*k3x + k4x);
-  double y_rel_next = y_rel + (dt / 6.0) * (k1y + 2*k2y + 2*k3y + k4y);
+  double k3x = dxdt(x_0 + 0.5 * dt * k2x, y_0 + 0.5 * dt * k2y);
+  double k3y = dydt(x_0 + 0.5 * dt * k2x, y_0 + 0.5 * dt * k2y);
 
-  double x_next = x_rel_next * e2_x();
-  double y_next = y_rel_next * e2_y();
+  double k4x = dxdt(x_0 + dt * k3x, y_0 + dt * k3y);
+  double k4y = dydt(x_0 + dt * k3x, y_0 + dt * k3y);
 
-  if (x_next < 1e-6) x_next = 0;
-  if (y_next < 1e-6) y_next = 0;
+  double x_next = x_0 + (dt / 6.0) * (k1x + 2*k2x + 2*k3x + k4x);
+  double y_next = y_0 + (dt / 6.0) * (k1y + 2*k2y + 2*k3y + k4y);
 
-  double H_next = (x_next < 1e-6 || y_next < 1e-6) ?
-      0 : -D * log(x_next) + C * x_next + B * y_next - A * log(y_next);
+  // Protezione logaritmi
+  if (x_next <= 0.0 || y_next <= 0.0) {
+    std::cerr << "Errore: una delle due specie si è estinta. Simulazione interrotta.\n";
+    return;
+  }
+
+  double H_next = -D * log(x_next) + C * x_next + B * y_next - A * log(y_next);
 
   data.x.push_back(x_next);
   data.y.push_back(y_next);
@@ -102,6 +94,7 @@ void pf::Simulation::evolveRK4() {
   x_0 = x_next;
   y_0 = y_next;
 }
+
 
 
 // metodo per ripetere la simulazione n volte per ottenere n+1 triple di valori

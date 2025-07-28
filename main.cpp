@@ -80,9 +80,6 @@ int main() {
 
   std::cout << "Simulation completed, results written in ValueList.txt and in "
                "e_2Coordinates.txt\n";
-  std::cout << "If one of the species got extinct the value of the integral is "
-               "undefined,\n"
-               "it has been arbitrarily set to 0\n";
 
   return 0;
 }
