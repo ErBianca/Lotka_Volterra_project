@@ -77,6 +77,7 @@ int main() {
   simulation.initializeVectors();
   simulation.runSimulation(steps);
   simulation.writeResults();
+  simulation.computeStatistics();
 
   std::cout << "Simulation completed, results written in ValueList.txt and in "
                "e_2Coordinates.txt\n";

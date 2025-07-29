@@ -5,6 +5,9 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
+#include <numeric> 
+#include <iomanip>
+#include <algorithm>
 
 namespace pf {
 
@@ -53,6 +56,9 @@ public:
 
   // writing in a txt file the values inside the vectors x,y,H and t
   void writeResults();
+  
+  //method that writes the statistical values of prey and predators
+  void computeStatistics() const;
 
 private:
   double A{};
