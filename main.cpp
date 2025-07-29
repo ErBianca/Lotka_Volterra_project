@@ -1,7 +1,9 @@
 #include <iostream>
-#include <limits> // Per std::numeric_limits
+#include <limits> 
 
 #include "lotka_volterra.hpp"
+#include "graphic.hpp"
+
 
 int main() {
   // Inserimento parametri A, B, C, D
@@ -78,8 +80,10 @@ int main() {
   simulation.runSimulation(steps);
   simulation.writeResults();
   simulation.computeStatistics();
+  pf::plotLissajous(simulation.getx(), simulation.gety());
 
-  std::cout << "Simulation completed, results written in ValueList.txt and in "
+  std::cout << "Simulation completed, results written in ValueList.txt, "
+               "Statistics.txt and "
                "e_2Coordinates.txt\n";
 
   return 0;

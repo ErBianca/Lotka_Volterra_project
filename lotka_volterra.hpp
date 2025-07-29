@@ -27,7 +27,7 @@ public:
              double newD = 0.0, double newx_0 = 0.0, double newy_0 = 0.0,
              double new_dt = 0.001);
 
-  // methods to get elements inside the vectors (useful for the tests)
+  // methods to get elements inside the vectors (useful for testing and graphic)
   const std::vector<double> &getx() const;
   const std::vector<double> &gety() const;
   const std::vector<double> &getH() const;

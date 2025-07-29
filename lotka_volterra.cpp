@@ -12,7 +12,8 @@ void pf::Simulation::setUseRK4(bool flag) { useRK4 = flag; }
 
 // metodo per ottenere il vettore dei tempi
 const std::vector<double> &Simulation::gett() const { return t; }
-
+const std::vector<double> &Simulation::getx() const { return data.x; }
+const std::vector<double> &Simulation::gety() const { return data.y; }
 // metodo per ottenere la coordinata x del punto di equilibrio e_2
 double Simulation::e2_x() { return D / C; }
 
@@ -46,7 +47,8 @@ void Simulation::evolve() {
   double y_i = y_i_rel * e2_y();
 
   if (x_i <= 0.0 || y_i <= 0.0) {
-    std::cerr << "Errore: una delle due specie si è estinta. Simulazione interrotta.\n";
+    std::cerr << "Errore: una delle due specie si è estinta. Simulazione "
+                 "interrotta.\n";
     return;
   }
 
@@ -80,11 +82,13 @@ void pf::Simulation::evolveRK4() {
   double y_next = y_0 + (dt / 6.0) * (k1y + 2 * k2y + 2 * k3y + k4y);
 
   if (x_next <= 1e-6 || y_next <= 1e-6) {
-    std::cerr << "Errore: una delle due specie si è estinta. Simulazione interrotta.\n";
+    std::cerr << "Errore: una delle due specie si è estinta. Simulazione "
+                 "interrotta.\n";
     return;
   }
 
-  double H_next = -D * std::log(x_next) + C * x_next + B * y_next - A * std::log(y_next);
+  double H_next =
+      -D * std::log(x_next) + C * x_next + B * y_next - A * std::log(y_next);
 
   data.x.push_back(x_next);
   data.y.push_back(y_next);
@@ -93,7 +97,6 @@ void pf::Simulation::evolveRK4() {
   x_0 = x_next;
   y_0 = y_next;
 }
-
 
 // metodo per ripetere la simulazione n volte per ottenere n+1 triple di valori
 void Simulation::runSimulation(int n) {
@@ -156,8 +159,6 @@ void pf::Simulation::computeStatistics() const {
       << "  Mean: " << mean_H << "\n";
 
   out.close();
-
-  std::cout << "\n[+] Simulation statistics saved to Statistics.txt\n";
 }
 
 } // namespace pf
