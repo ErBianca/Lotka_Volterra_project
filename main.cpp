@@ -80,7 +80,7 @@ int main() {
   simulation.runSimulation(steps);
   simulation.writeResults();
   simulation.computeStatistics();
-  pf::plotLissajous(simulation.getx(), simulation.gety());
+  pf::plotLissajous(simulation.getx(), simulation.gety(), newA, newB, newC, newD);
 
   std::cout << "Simulation completed, results written in ValueList.txt, "
                "Statistics.txt and "

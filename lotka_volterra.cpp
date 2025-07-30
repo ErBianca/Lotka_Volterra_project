@@ -10,7 +10,7 @@ Simulation::Simulation(double newA, double newB, double newC, double newD,
 
 void pf::Simulation::setUseRK4(bool flag) { useRK4 = flag; }
 
-// metodo per ottenere il vettore dei tempi
+// Getter degli elementi dei vector
 const std::vector<double> &Simulation::gett() const { return t; }
 const std::vector<double> &Simulation::getx() const { return data.x; }
 const std::vector<double> &Simulation::gety() const { return data.y; }
