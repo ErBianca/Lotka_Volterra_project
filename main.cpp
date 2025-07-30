@@ -81,7 +81,7 @@ int main() {
   simulation.writeResults();
   simulation.computeStatistics();
   pf::plotLissajous(simulation.getx(), simulation.gety(), newA, newB, newC, newD);
-
+  pf::plotTimeEvolution(simulation.gett(), simulation.getx(), simulation.gety());
   std::cout << "Simulation completed, results written in ValueList.txt, "
                "Statistics.txt and "
                "e_2Coordinates.txt\n";
