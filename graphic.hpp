@@ -7,6 +7,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <iomanip>
+#include <sstream>
 
 namespace pf {
 void plotLissajous(const std::vector<double> &x, const std::vector<double> &y,

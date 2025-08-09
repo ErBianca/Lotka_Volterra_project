@@ -55,7 +55,7 @@ public:
   void runSimulation(int n);
 
   // writing in a txt file the values inside the vectors x,y,H and t
-  void writeResults();
+  void writeResults() const;
   
   //method that writes the statistical values of prey and predators
   void computeStatistics() const;

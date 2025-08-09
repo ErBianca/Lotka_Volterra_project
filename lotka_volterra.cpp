@@ -111,16 +111,27 @@ void Simulation::runSimulation(int n) {
 }
 
 // metodo per scrivere i valori contenuti nei vettori x, y, H e t in un file txt
-void Simulation::writeResults() {
-  std::ofstream File("ValueList.txt");
+void pf::Simulation::writeResults() const {
+    if (data.x.empty() || t.empty()) {
+        std::cout << "No data available.\n";
+        return;
+    }
 
-  for (size_t m = 0; m < data.x.size(); ++m) {
-    File << std::fixed << t[m] << " " << std::fixed << data.x[m] << " "
-         << std::fixed << data.y[m] << " " << std::fixed << data.H[m] << '\n';
-  }
+    std::ofstream out("ValueList.txt");
+    out << std::fixed << std::setprecision(6);
 
-  File.close();
+    out << "TIME\tPREY(x)\tPREDATOR(y)\tH\n\n";
+
+    for (size_t m = 0; m < data.x.size(); ++m) {
+        out << t[m] << "\t"
+            << data.x[m] << "\t"
+            << data.y[m] << "\t"
+            << data.H[m] << "\n";
+    }
+
+    out.close();
 }
+
 
 void pf::Simulation::computeStatistics() const {
   if (data.x.empty()) {
