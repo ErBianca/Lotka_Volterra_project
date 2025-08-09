@@ -78,6 +78,7 @@ int main() {
   int steps = static_cast<int>(duration / 0.001);
   simulation.initializeVectors();
   simulation.runSimulation(steps);
+  simulation.checkHStability(1e-4);
   simulation.writeResults();
   simulation.computeStatistics();
   pf::plotLissajous(simulation.getx(), simulation.gety(), newA, newB, newC, newD);

@@ -36,11 +36,11 @@ public:
   void setUseRK4(bool flag);
 
   // method to get the coordinates of the point of equilibrium e_2
-  double e2_x();
-  double e2_y();
+  double e2_x() const;
+  double e2_y() const;
 
   // method to write the coordinates of e_2 in a txt file
-  void writeCoordinates();
+  void writeCoordinates() const;
 
   // method to initialize the vector x,y,H and t with the initial values
   void initializeVectors();
@@ -59,6 +59,9 @@ public:
   
   //method that writes the statistical values of prey and predators
   void computeStatistics() const;
+  
+  //method to check the stability of the first integral
+  bool checkHStability(double tolerance) const;
 
 private:
   double A{};

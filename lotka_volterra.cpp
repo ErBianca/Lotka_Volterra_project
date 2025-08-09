@@ -15,13 +15,13 @@ const std::vector<double> &Simulation::gett() const { return t; }
 const std::vector<double> &Simulation::getx() const { return data.x; }
 const std::vector<double> &Simulation::gety() const { return data.y; }
 // metodo per ottenere la coordinata x del punto di equilibrio e_2
-double Simulation::e2_x() { return D / C; }
+double Simulation::e2_x() const { return D / C; }
 
 // metodo per ottenere la coordinata y del punto di equilibrio e_2
-double Simulation::e2_y() { return A / B; }
+double Simulation::e2_y() const { return A / B; }
 
 // metodo per scrivere le coordinate del punto di equilibrio e_2 in un file txt
-void Simulation::writeCoordinates() {
+void Simulation::writeCoordinates() const {
   std::ofstream File("e_2Coordinates.txt");
   File << e2_x() << std::endl << e2_y() << std::endl;
   File.close();
@@ -112,26 +112,23 @@ void Simulation::runSimulation(int n) {
 
 // metodo per scrivere i valori contenuti nei vettori x, y, H e t in un file txt
 void pf::Simulation::writeResults() const {
-    if (data.x.empty() || t.empty()) {
-        std::cout << "No data available.\n";
-        return;
-    }
+  if (data.x.empty() || t.empty()) {
+    std::cout << "No data available.\n";
+    return;
+  }
 
-    std::ofstream out("ValueList.txt");
-    out << std::fixed << std::setprecision(6);
+  std::ofstream out("ValueList.txt");
+  out << std::fixed << std::setprecision(6);
 
-    out << "TIME\tPREY(x)\tPREDATOR(y)\tH\n\n";
+  out << "TIME\tPREY(x)\tPREDATOR(y)\tH\n\n";
 
-    for (size_t m = 0; m < data.x.size(); ++m) {
-        out << t[m] << "\t"
-            << data.x[m] << "\t"
-            << data.y[m] << "\t"
-            << data.H[m] << "\n";
-    }
+  for (size_t m = 0; m < data.x.size(); ++m) {
+    out << t[m] << "\t" << data.x[m] << "\t" << data.y[m] << "\t" << data.H[m]
+        << "\n";
+  }
 
-    out.close();
+  out.close();
 }
-
 
 void pf::Simulation::computeStatistics() const {
   if (data.x.empty()) {
@@ -170,6 +167,33 @@ void pf::Simulation::computeStatistics() const {
       << "  Mean: " << mean_H << "\n";
 
   out.close();
+}
+
+bool pf::Simulation::checkHStability(double tolerance) const {
+  if (data.H.empty()) {
+    std::cerr << "No data available to check stability.\n";
+    return false;
+  }
+
+  double H0 = data.H.front();
+  double maxDeviation = 0.0;
+
+  for (double Hval : data.H) {
+    double deviation = std::fabs(Hval - H0) / std::fabs(H0);
+    if (deviation > maxDeviation) {
+      maxDeviation = deviation;
+    }
+  }
+
+  std::ofstream out("H_Stability.txt");
+  out << std::fixed << std::setprecision(6);
+  out << "Initial H: " << H0 << "\n";
+  out << "Max relative deviation: " << maxDeviation << "\n";
+  out << "Tolerance: " << tolerance << "\n";
+  out << "Stable: " << (maxDeviation <= tolerance ? "YES" : "NO") << "\n";
+  out.close();
+
+  return maxDeviation <= tolerance;
 }
 
 } // namespace pf

@@ -151,8 +151,6 @@ void plotLissajous(const std::vector<double> &x, const std::vector<double> &y,
   }
 }
 
-#include <iomanip>
-#include <sstream>
 
 void plotTimeEvolution(const std::vector<double> &t,
                        const std::vector<double> &x,
