@@ -37,27 +37,34 @@ void Simulation::initializeVectors() {
 
 // metodo per calcolare i nuovi valori di x, y e H dopo un intervallo dt
 void Simulation::evolve() {
+  // Variabili relative rispetto al punto di equilibrio e2
   double x_0_rel = x_0 / e2_x();
   double y_0_rel = y_0 / e2_y();
 
-  double x_i_rel = x_0_rel + (A - B * y_0_rel) * x_0_rel * dt;
-  double y_i_rel = y_0_rel + (C * x_0_rel - D) * y_0_rel * dt;
+  // Aggiornamento con la formula relativa dell'immagine
+  double x_i_rel = x_0_rel + A * (1.0 - y_0_rel) * x_0_rel * dt;
+  double y_i_rel = y_0_rel + D * (x_0_rel - 1.0) * y_0_rel * dt;
 
+  // Conversione alle variabili assolute
   double x_i = x_i_rel * e2_x();
   double y_i = y_i_rel * e2_y();
-
-  if (x_i <= 0.0 || y_i <= 0.0) {
+  
+  // Controllo di estinzione
+  if (x_i <= 1e-6 || y_i <= 1e-6) {
     std::cerr << "Errore: una delle due specie si è estinta. Simulazione "
                  "interrotta.\n";
     return;
   }
 
+  // Calcolo di H_i
   double H_i = -D * std::log(x_i) + C * x_i + B * y_i - A * std::log(y_i);
 
+  // Salvataggio dei dati
   data.x.push_back(x_i);
   data.y.push_back(y_i);
   data.H.push_back(H_i);
-
+  
+  // Aggiornamento stato iniziale
   x_0 = x_i;
   y_0 = y_i;
 }
