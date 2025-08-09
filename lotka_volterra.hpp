@@ -1,83 +1,92 @@
 #ifndef LOTKA_VOLTERRA_HPP
 #define LOTKA_VOLTERRA_HPP
 
-#include <cmath>
-#include <fstream>
 #include <vector>
+#include <fstream>
 #include <iostream>
-#include <numeric> 
-#include <iomanip>
+#include <cmath>
+#include <numeric>
 #include <algorithm>
+#include <iomanip>
 
 namespace pf {
 
-// Struct per raggruppare i dati della simulazione
-struct SimulationData {
-  std::vector<double> x;
-  std::vector<double> y;
-  std::vector<double> H;
+// Struttura dati per contenere i vettori delle popolazioni e della funzione H
+struct Data {
+  std::vector<double> x; // popolazione delle prede
+  std::vector<double> y; // popolazione dei predatori
+  std::vector<double> H; // integrale del moto (funzione conservata)
 };
 
+// Classe che simula il sistema di equazioni Lotka-Volterra
 class Simulation {
-
-public:
-  // parametric constructor
-
-  Simulation(double newA = 0.0, double newB = 0.0, double newC = 0.0,
-             double newD = 0.0, double newx_0 = 0.0, double newy_0 = 0.0,
-             double new_dt = 0.001);
-
-  // methods to get elements inside the vectors (useful for testing and graphic)
-  const std::vector<double> &getx() const;
-  const std::vector<double> &gety() const;
-  const std::vector<double> &getH() const;
-  const std::vector<double> &gett() const;
-
-  void setUseRK4(bool flag);
-
-  // method to get the coordinates of the point of equilibrium e_2
-  double e2_x() const;
-  double e2_y() const;
-
-  // method to write the coordinates of e_2 in a txt file
-  void writeCoordinates() const;
-
-  // method to initialize the vector x,y,H and t with the initial values
-  void initializeVectors();
-
-  // method to calculate the new values of x,y and H after dt (Euler method)
-  void evolve();
-
-  // method to calculate the new values of x,y and H after dt (RK4 method)
-  void evolveRK4();
-
-  // method to repete the simulation n times to obtain n+1 triples of values
-  void runSimulation(int n);
-
-  // writing in a txt file the values inside the vectors x,y,H and t
-  void writeResults() const;
-  
-  //method that writes the statistical values of prey and predators
-  void computeStatistics() const;
-  
-  //method to check the stability of the first integral
-  bool checkHStability(double tolerance) const;
-
 private:
-  double A{};
-  double B{};
-  double C{};
-  double D{};
-  double x_0{};
-  double y_0{};
-  double dt{0.001};
+  // Coefficienti del sistema Lotka-Volterra
+  double A, B, C, D;
 
+  // Condizioni iniziali per prede (x_0) e predatori (y_0)
+  double x_0, y_0;
+
+  // Passo temporale per l'evoluzione
+  double dt;
+
+  // Flag per decidere se usare il metodo Runge-Kutta 4 (RK4)
   bool useRK4 = false;
 
-  SimulationData data{};
-  std::vector<double> t = {};
+  // Oggetto dati che contiene i vettori delle popolazioni e dell'integrale H
+  Data data;
+
+  // Vettore dei tempi corrispondenti ai dati salvati
+  std::vector<double> t;
+
+public:
+  // Costruttore con parametri iniziali per i coefficienti e condizioni iniziali
+  Simulation(double newA, double newB, double newC, double newD,
+             double newx_0, double newy_0, double new_dt);
+
+  // Imposta se utilizzare il metodo RK4 per l'evoluzione
+  void setUseRK4(bool flag);
+
+  // Getter per il vettore dei tempi
+  const std::vector<double> &gett() const;
+
+  // Getter per il vettore della popolazione delle prede
+  const std::vector<double> &getx() const;
+
+  // Getter per il vettore della popolazione dei predatori
+  const std::vector<double> &gety() const;
+
+  // Calcola la coordinata x del punto di equilibrio non banale e_2
+  double e2_x() const;
+
+  // Calcola la coordinata y del punto di equilibrio non banale e_2
+  double e2_y() const;
+
+  // Scrive su file le coordinate del punto di equilibrio e_2
+  void writeCoordinates() const;
+
+  // Inizializza i vettori delle popolazioni, di H e del tempo con i valori iniziali
+  void initializeVectors();
+
+  // Calcola un passo di evoluzione usando la formula semplificata (Euler esplicito)
+  void evolve();
+
+  // Calcola un passo di evoluzione usando il metodo Runge-Kutta di ordine 4 (RK4)
+  void evolveRK4();
+
+  // Esegue la simulazione per n passi temporali, scegliendo il metodo di evoluzione
+  void runSimulation(int n);
+
+  // Scrive su file i risultati temporali delle popolazioni e di H
+  void writeResults() const;
+
+  // Calcola e scrive statistiche minime, massime e medie di x, y e H
+  void computeStatistics() const;
+
+  // Controlla se l'integrale del moto H è stabile entro una certa tolleranza
+  bool checkHStability(double tolerance) const;
 };
 
 } // namespace pf
 
-#endif
+#endif // LOTKA_VOLTERRA_HPP
