@@ -32,3 +32,7 @@ set(TEST_SOURCES
 
 add_executable(lotka_volterra_tests ${TEST_SOURCES})
 target_link_libraries(lotka_volterra_tests sfml-graphics sfml-window sfml-system)
+
+
+# Copia il font nella cartella di build
+configure_file(DejaVuSans.ttf DejaVuSans.ttf COPYONLY)
