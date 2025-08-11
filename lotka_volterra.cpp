@@ -45,41 +45,49 @@ void Simulation::initializeVectors() {
 
 // Calcola i nuovi valori di x, y e H dopo un intervallo dt usando la formula
 // semplificata
+#include <limits> // per std::numeric_limits
+
 void Simulation::evolve() {
   // Variabili relative rispetto al punto di equilibrio e_2
   double x_0_rel = x_0 / e2_x();
   double y_0_rel = y_0 / e2_y();
 
-  // Aggiornamento con la formula relativa (approssimazione Euler esplicita)
+  // Aggiornamento con la formula relativa (Euler esplicito)
   double x_i_rel = x_0_rel + A * (1.0 - y_0_rel) * x_0_rel * dt;
   double y_i_rel = y_0_rel + D * (x_0_rel - 1.0) * y_0_rel * dt;
 
-  // Conversione alle variabili assolute (popolazioni reali)
+  // Conversione alle variabili assolute
   double x_i = x_i_rel * e2_x();
   double y_i = y_i_rel * e2_y();
 
-  // Controllo se una specie si è estinta (valori troppo bassi)
-  if (x_i <= 1e-6 || y_i <= 1e-6) {
-    std::cerr << "Errore: una delle due specie si è estinta. Simulazione "
-                 "interrotta.\n";
-    return;
+  // Se sotto soglia → estinzione
+  bool extinct_x = (x_i <= 1e-6);
+  bool extinct_y = (y_i <= 1e-6);
+  if (extinct_x)
+    x_i = 0.0;
+  if (extinct_y)
+    y_i = 0.0;
+
+  // Calcolo H: in caso di estinzione è infinito
+  double H_i;
+  if (extinct_x || extinct_y) {
+    H_i = std::numeric_limits<double>::infinity(); // o NaN se preferisci
+  } else {
+    H_i = -D * std::log(x_i) + C * x_i + B * y_i - A * std::log(y_i);
   }
 
-  // Calcolo del valore di H per il nuovo stato
-  double H_i = -D * std::log(x_i) + C * x_i + B * y_i - A * std::log(y_i);
-
-  // Salvataggio dei nuovi dati nei vettori
+  // Salvataggio dei nuovi dati
   data.x.push_back(x_i);
   data.y.push_back(y_i);
   data.H.push_back(H_i);
 
-  // Aggiornamento degli stati iniziali per il prossimo passo
+  // Aggiornamento stato
   x_0 = x_i;
   y_0 = y_i;
 }
 
-// Calcola i nuovi valori di x, y e H dopo un intervallo dt usando il metodo
-// Runge-Kutta 4
+#include <limits> // per std::numeric_limits
+
 void pf::Simulation::evolveRK4() {
   // Definizione delle derivate dx/dt e dy/dt per il sistema di equazioni
   // Lotka-Volterra
@@ -107,15 +115,21 @@ void pf::Simulation::evolveRK4() {
   double y_next = y_0 + (dt / 6.0) * (k1y + 2 * k2y + 2 * k3y + k4y);
 
   // Controllo di estinzione
-  if (x_next <= 1e-6 || y_next <= 1e-6) {
-    std::cerr << "Errore: una delle due specie si è estinta. Simulazione "
-                 "interrotta.\n";
-    return;
-  }
+  bool extinct_x = (x_next <= 1e-6);
+  bool extinct_y = (y_next <= 1e-6);
+  if (extinct_x)
+    x_next = 0.0;
+  if (extinct_y)
+    y_next = 0.0;
 
-  // Calcolo del valore di H per il nuovo stato
-  double H_next =
-      -D * std::log(x_next) + C * x_next + B * y_next - A * std::log(y_next);
+  // Calcolo del valore di H
+  double H_next;
+  if (extinct_x || extinct_y) {
+    H_next = std::numeric_limits<double>::infinity(); 
+  } else {
+    H_next =
+        -D * std::log(x_next) + C * x_next + B * y_next - A * std::log(y_next);
+  }
 
   // Salvataggio dei dati
   data.x.push_back(x_next);
