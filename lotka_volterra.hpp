@@ -55,6 +55,9 @@ public:
 
   // Getter per il vettore della popolazione dei predatori
   const std::vector<double> &gety() const;
+  
+  // Getter per il vettore dell'integrale primo
+  const std::vector<double> &getH() const;
 
   // Calcola la coordinata x del punto di equilibrio non banale e_2
   double e2_x() const;

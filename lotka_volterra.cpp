@@ -17,6 +17,8 @@ const std::vector<double> &Simulation::gett() const { return t; }
 const std::vector<double> &Simulation::getx() const { return data.x; }
 // Getter per il vettore delle popolazioni dei predatori
 const std::vector<double> &Simulation::gety() const { return data.y; }
+// Getter per il vettore dell'integrale primo
+const std::vector<double> &Simulation::getH() const { return data.H; }
 
 // Calcola la coordinata x del punto di equilibrio e_2 (preda)
 double Simulation::e2_x() const { return D / C; }

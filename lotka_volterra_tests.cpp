@@ -1,23 +1,14 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 #include "lotka_volterra.hpp"
+#include <cmath>
 
 TEST_CASE(
-    "Testing the simulation given the first set of parameters and initial "
-    "values") {
-  // setting the parameters and the initial values
-  pf::Simulation sim1;
-  sim1.setValueA(1.1);
-  sim1.setValueB(0.4);
-  sim1.setValueC(0.1);
-  sim1.setValueD(0.4);
+    "Testing the simulation given the first set of parameters and initial values") {
 
-  sim1.setx_0(80);
-  sim1.sety_0(20);
-
+  pf::Simulation sim1(1.1, 0.4, 0.1, 0.4, 80, 20, 0.001);
   sim1.initializeVectors();
 
-  // doing tests divided in subcases
   SUBCASE("testing the values of e2_x and e2_y") {
     CHECK(sim1.e2_x() == 4);
     CHECK(sim1.e2_y() == 2.75);
@@ -72,6 +63,7 @@ TEST_CASE(
     CHECK(sim1.getH().size() == 51);
     CHECK(sim1.gett().size() == 51);
   }
+
   SUBCASE("testing the values of x,y and H after 0.37") {
     sim1.runSimulation(370);
     CHECK(sim1.getx()[370] == doctest::Approx(31.4399027195));
@@ -84,23 +76,13 @@ TEST_CASE(
     CHECK(sim1.gett().size() == 371);
   }
 }
+
 TEST_CASE(
-    " Testing the simulation given the second set of parameters and initial "
-    "values") {
-  // changing the values of the parameters and redoing the tests
-  // setting the parameters and the initial values
-  pf::Simulation sim2;
-  sim2.setValueA(1.2);
-  sim2.setValueB(0.5);
-  sim2.setValueC(0.2);
-  sim2.setValueD(0.7);
+    "Testing the simulation given the second set of parameters and initial values") {
 
-  sim2.setx_0(25);
-  sim2.sety_0(15);
-
+  pf::Simulation sim2(1.2, 0.5, 0.2, 0.7, 25, 15, 0.001);
   sim2.initializeVectors();
 
-  // doing tests divided in subcases
   SUBCASE("testing the values of e2_x and e2_y") {
     CHECK(sim2.e2_x() == doctest::Approx(3.5));
     CHECK(sim2.e2_y() == doctest::Approx(2.4));
@@ -149,6 +131,7 @@ TEST_CASE(
     CHECK(sim2.getx()[50] == doctest::Approx(22.6435977623));
     CHECK(sim2.gety()[50] == doctest::Approx(15.5047001662));
     CHECK(sim2.getH()[50] == doctest::Approx(6.8077837714));
+
     CHECK(sim2.getx().size() == 51);
     CHECK(sim2.gety().size() == 51);
     CHECK(sim2.getH().size() == 51);
@@ -160,24 +143,18 @@ TEST_CASE(
     CHECK(sim2.getx()[41000] == doctest::Approx(32.3056759334));
     CHECK(sim2.gety()[41000] == doctest::Approx(13.3331269875));
     CHECK(sim2.getH()[41000] == doctest::Approx(7.5867265950));
+
     CHECK(sim2.getx().size() == 41001);
     CHECK(sim2.gety().size() == 41001);
     CHECK(sim2.getH().size() == 41001);
     CHECK(sim2.gett().size() == 41001);
   }
 }
+
 TEST_CASE(
-    "testing the case in which the specie of preys goes extinct (followed by "
-    "the predator specie) after a sufficient long time") {
-  pf::Simulation sim3;
-  sim3.setValueA(0.6);
-  sim3.setValueB(2.5);
-  sim3.setValueC(0.3);
-  sim3.setValueD(0.5);
+    "testing the case in which the specie of preys goes extinct (followed by the predator specie)") {
 
-  sim3.setx_0(8);
-  sim3.sety_0(12);
-
+  pf::Simulation sim3(0.6, 2.5, 0.3, 0.5, 8, 12, 0.001);
   sim3.initializeVectors();
 
   sim3.runSimulation(80000);
@@ -186,34 +163,17 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "testing the case in which the species of predators goes extinct and the "
-    "number of preys increases indefinitely after a sufficient long time") {
-  pf::Simulation sim4;
-  sim4.setValueA(3.0);
-  sim4.setValueB(0.005);
-  sim4.setValueC(0.0001);
-  sim4.setValueD(2.5);
+    "testing the case in which predators go extinct and preys increase indefinitely") {
 
-  sim4.setx_0(60);
-  sim4.sety_0(5);
-
+  pf::Simulation sim4(3.0, 0.005, 0.0001, 2.5, 60, 5, 0.001);
   sim4.initializeVectors();
 
   sim4.runSimulation(80000);
   CHECK(sim4.gety()[80000] == 0);
 }
 
-// testing equilibrium points
 TEST_CASE("Testing equilibrium") {
-  pf::Simulation sim5;
-  sim5.setValueA(2.0);
-  sim5.setValueB(0.01);
-  sim5.setValueC(0.02);
-  sim5.setValueD(1.5);
-
-  // testing the case in which there aren't any preys or predators
-  sim5.setx_0(0);
-  sim5.sety_0(0);
+  pf::Simulation sim5(2.0, 0.01, 0.02, 1.5, 0, 0, 0.001);
   sim5.initializeVectors();
 
   sim5.runSimulation(80000);
@@ -225,16 +185,8 @@ TEST_CASE("Testing equilibrium") {
   CHECK(sim5.gety()[5000] == 0);
 }
 
-
 TEST_CASE("Testing evolveRK4 with first parameter set") {
-    pf::Simulation sim6;
-    sim6.setValueA(1.1);
-    sim6.setValueB(0.4);
-    sim6.setValueC(0.1);
-    sim6.setValueD(0.4);
-
-    sim6.setx_0(80);
-    sim6.sety_0(20);
+    pf::Simulation sim6(1.1, 0.4, 0.1, 0.4, 80, 20, 0.001);
     sim6.initializeVectors();
 
     SUBCASE("Initial state") {
@@ -247,8 +199,8 @@ TEST_CASE("Testing evolveRK4 with first parameter set") {
 
     SUBCASE("After one RK4 step") {
         sim6.evolveRK4();
-        CHECK(sim6.getx()[1] == doctest::Approx( /* valore atteso */ ));
-        CHECK(sim6.gety()[1] == doctest::Approx( /* valore atteso */ ));
+        CHECK(sim6.getx()[1] == doctest::Approx(79.447485));
+        CHECK(sim6.gety()[1] == doctest::Approx(20.152023));
         CHECK(sim6.getH()[1] == doctest::Approx(
             -0.4 * std::log(sim6.getx()[1]) + 0.1 * sim6.getx()[1] +
              0.4 * sim6.gety()[1] - 1.1 * std::log(sim6.gety()[1])
@@ -268,14 +220,7 @@ TEST_CASE("Testing evolveRK4 with first parameter set") {
 }
 
 TEST_CASE("Testing evolveRK4 extinction scenario") {
-    pf::Simulation sim7;
-    sim7.setValueA(0.6);
-    sim7.setValueB(2.5);
-    sim7.setValueC(0.3);
-    sim7.setValueD(0.5);
-
-    sim7.setx_0(8);
-    sim7.sety_0(12);
+    pf::Simulation sim7(0.6, 2.5, 0.3, 0.5, 8, 12, 0.001);
     sim7.initializeVectors();
 
     for (int i = 0; i < 80000; ++i)
@@ -286,14 +231,7 @@ TEST_CASE("Testing evolveRK4 extinction scenario") {
 }
 
 TEST_CASE("Testing evolveRK4 predator extinction") {
-    pf::Simulation sim8;
-    sim8.setValueA(3.0);
-    sim8.setValueB(0.005);
-    sim8.setValueC(0.0001);
-    sim8.setValueD(2.5);
-
-    sim8.setx_0(60);
-    sim8.sety_0(5);
+    pf::Simulation sim8(3.0, 0.005, 0.0001, 2.5, 60, 5, 0.001);
     sim8.initializeVectors();
 
     for (int i = 0; i < 80000; ++i)

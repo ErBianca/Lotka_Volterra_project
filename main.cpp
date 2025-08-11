@@ -53,7 +53,7 @@ int main() {
 
   // Scelta del metodo di integrazione: Euler o Runge-Kutta 4
   std::cout << "Scegli il metodo di integrazione:\n";
-  std::cout << "1 - Metodo di Euler\n";
+  std::cout << "1 - Metodo di Eulero\n";
   std::cout << "2 - Runge-Kutta di ordine 4 (RK4)\n";
   int method_choice;
   std::cin >> method_choice;
