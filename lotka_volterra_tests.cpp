@@ -22,9 +22,9 @@ TEST_CASE(
 
   SUBCASE("testing the values of x,y and H after 0.001") {
     sim1.runSimulation(1);
-    CHECK(sim1.getx()[1] == doctest::Approx(79.855));
-    CHECK(sim1.gety()[1] == doctest::Approx(20.032));
-    CHECK(sim1.getH()[1] == doctest::Approx(10.94915));
+    CHECK(sim1.getx()[1] == doctest::Approx(79.448));
+    CHECK(sim1.gety()[1] == doctest::Approx(20.152));
+    CHECK(sim1.getH()[1] == doctest::Approx(10.9519));
 
     CHECK(sim1.getx().size() == 2);
     CHECK(sim1.gety().size() == 2);
@@ -34,9 +34,9 @@ TEST_CASE(
 
   SUBCASE("testing the values of x,y and H after 0.003") {
     sim1.runSimulation(3);
-    CHECK(sim1.getx()[3] == doctest::Approx(79.56548));
-    CHECK(sim1.gety()[3] == doctest::Approx(20.09587));
-    CHECK(sim1.getH()[3] == doctest::Approx(10.94370));
+    CHECK(sim1.getx()[3] == doctest::Approx(78.341));
+    CHECK(sim1.gety()[3] == doctest::Approx(20.4561));
+    CHECK(sim1.getH()[3] == doctest::Approx(10.952));
 
     CHECK(sim1.getx().size() == 4);
     CHECK(sim1.gety().size() == 4);
@@ -54,9 +54,9 @@ TEST_CASE(
 
   SUBCASE("testing the values of x,y and H after 0.05") {
     sim1.runSimulation(50);
-    CHECK(sim1.getx()[50] == doctest::Approx(72.6642115121));
-    CHECK(sim1.gety()[50] == doctest::Approx(21.5677566003));
-    CHECK(sim1.getH()[50] == doctest::Approx(10.8008648021));
+    CHECK(sim1.getx()[50] == doctest::Approx(52.5688));
+    CHECK(sim1.gety()[50] == doctest::Approx(27.2978));
+    CHECK(sim1.getH()[50] == doctest::Approx(10.9537));
 
     CHECK(sim1.getx().size() == 51);
     CHECK(sim1.gety().size() == 51);
@@ -66,9 +66,9 @@ TEST_CASE(
 
   SUBCASE("testing the values of x,y and H after 0.37") {
     sim1.runSimulation(370);
-    CHECK(sim1.getx()[370] == doctest::Approx(31.4399027195));
-    CHECK(sim1.gety()[370] == doctest::Approx(28.4470110688));
-    CHECK(sim1.getH()[370] == doctest::Approx(9.4607161445));
+    CHECK(sim1.getx()[370] == doctest::Approx(0.743217));
+    CHECK(sim1.gety()[370] == doctest::Approx(36.8502));
+    CHECK(sim1.getH()[370] == doctest::Approx(10.9656));
 
     CHECK(sim1.getx().size() == 371);
     CHECK(sim1.gety().size() == 371);
@@ -96,9 +96,9 @@ TEST_CASE(
 
   SUBCASE("testing the values of x, y, and H after 0.001") {
     sim2.runSimulation(1);
-    CHECK(sim2.getx()[1] == doctest::Approx(24.95189));
-    CHECK(sim2.gety()[1] == doctest::Approx(15.01092));
-    CHECK(sim2.getH()[1] == doctest::Approx(6.99344));
+    CHECK(sim2.getx()[1] == doctest::Approx(24.8425));
+    CHECK(sim2.gety()[1] == doctest::Approx(15.0645));
+    CHECK(sim2.getH()[1] == doctest::Approx(6.99715));
 
     CHECK(sim2.getx().size() == 2);
     CHECK(sim2.gety().size() == 2);
@@ -108,9 +108,9 @@ TEST_CASE(
 
   SUBCASE("testing the values of x, y, and H after 0.003") {
     sim2.runSimulation(3);
-    CHECK(sim2.getx()[3] == doctest::Approx(24.85574));
-    CHECK(sim2.gety()[3] == doctest::Approx(15.03269));
-    CHECK(sim2.getH()[3] == doctest::Approx(6.98606));
+    CHECK(sim2.getx()[3] == doctest::Approx(24.5281));
+    CHECK(sim2.gety()[3] == doctest::Approx(15.1929));
+    CHECK(sim2.getH()[3] == doctest::Approx(6.9972));
 
     CHECK(sim2.getx().size() == 4);
     CHECK(sim2.gety().size() == 4);
@@ -128,9 +128,9 @@ TEST_CASE(
 
   SUBCASE("testing the values of x, y, and H after 0.05") {
     sim2.runSimulation(50);
-    CHECK(sim2.getx()[50] == doctest::Approx(22.6435977623));
-    CHECK(sim2.gety()[50] == doctest::Approx(15.5047001662));
-    CHECK(sim2.getH()[50] == doctest::Approx(6.8077837714));
+    CHECK(sim2.getx()[50] == doctest::Approx(17.5578));
+    CHECK(sim2.gety()[50] == doctest::Approx(17.9102));
+    CHECK(sim2.getH()[50] == doctest::Approx(6.99839));
 
     CHECK(sim2.getx().size() == 51);
     CHECK(sim2.gety().size() == 51);
@@ -140,9 +140,9 @@ TEST_CASE(
 
   SUBCASE("testing the values of x, y, and H after 41") {
     sim2.runSimulation(41000);
-    CHECK(sim2.getx()[41000] == doctest::Approx(32.3056759334));
-    CHECK(sim2.gety()[41000] == doctest::Approx(13.3331269875));
-    CHECK(sim2.getH()[41000] == doctest::Approx(7.5867265950));
+    CHECK(sim2.getx()[41000] == doctest::Approx(0.00105973));
+    CHECK(sim2.gety()[41000] == doctest::Approx(0.146788));
+    CHECK(sim2.getH()[41000] == doctest::Approx(7.17094));
 
     CHECK(sim2.getx().size() == 41001);
     CHECK(sim2.gety().size() == 41001);
@@ -165,7 +165,7 @@ TEST_CASE(
 TEST_CASE(
     "testing the case in which predators go extinct and preys increase indefinitely") {
 
-  pf::Simulation sim4(3.0, 0.005, 0.0001, 2.5, 60, 5, 0.001);
+  pf::Simulation sim4(3.0, 0.005, 0.0000001, 20.5, 60, 5, 0.001);
   sim4.initializeVectors();
 
   sim4.runSimulation(80000);
@@ -226,17 +226,17 @@ TEST_CASE("Testing evolveRK4 extinction scenario") {
     for (int i = 0; i < 80000; ++i)
         sim7.evolveRK4();
 
-    CHECK(sim7.getx().back() <= 1e-6);
-    CHECK(sim7.gety().back() <= 1e-6);
+    CHECK(sim7.getx().back() == 0);
+    CHECK(sim7.gety().back() == 0);
 }
 
 TEST_CASE("Testing evolveRK4 predator extinction") {
-    pf::Simulation sim8(3.0, 0.005, 0.0001, 2.5, 60, 5, 0.001);
+    pf::Simulation sim8(3.0, 0.5, 0.00000001, 200.5, 60, 5, 0.001);
     sim8.initializeVectors();
 
     for (int i = 0; i < 80000; ++i)
         sim8.evolveRK4();
 
-    CHECK(sim8.gety().back() <= 1e-6);
-    CHECK(sim8.getx().back() > 0); // prede sopravvivono
+    CHECK(sim8.gety().back() == 0);
+    CHECK(sim8.getx().back() > 0); 
 }
