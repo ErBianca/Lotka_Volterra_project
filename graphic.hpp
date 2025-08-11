@@ -11,7 +11,9 @@
 #include <sstream>
 
 namespace pf {
-void plotLissajous(const std::vector<double> &x, const std::vector<double> &y,
+std::string shortLabel(double val);
+
+void plotEquilibriumPointGraph(const std::vector<double> &x, const std::vector<double> &y,
                    double A, double B, double C, double D);
 
 void plotTimeEvolution(const std::vector<double> &t,

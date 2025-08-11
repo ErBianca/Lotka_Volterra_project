@@ -1,7 +1,36 @@
 #include "graphic.hpp"
 
 namespace pf {
-void plotLissajous(const std::vector<double> &x, const std::vector<double> &y,
+
+// Funzione helper per etichette brevi (max 3 caratteri, ma la notazione scientifica non viene troncata)
+std::string shortLabel(double val) {
+    std::ostringstream oss;
+    bool scientificMode = false;
+
+    // Se il valore è molto grande o molto piccolo, usa scientifica
+    if (std::abs(val) >= 1000 || (std::abs(val) < 0.01 && val != 0.0)) {
+        oss << std::scientific << std::setprecision(0) << val;
+        scientificMode = true;
+    } else {
+        // Calcola quanti decimali mantenere per stare entro 3 caratteri
+        if (std::abs(val) >= 100) {
+            oss << std::fixed << std::setprecision(0) << val; // es: 100
+        } else if (std::abs(val) >= 10) {
+            oss << std::fixed << std::setprecision(1) << val; // es: 10.5
+        } else {
+            oss << std::fixed << std::setprecision(2) << val; // es: 9.99
+        }
+    }
+
+    std::string s = oss.str();
+    if (!scientificMode && s.size() > 3) {
+        // Se non siamo in modalità scientifica e ancora troppo lungo, tronca
+        s = s.substr(0, 3);
+    }
+    return s;
+}
+
+void plotEquilibriumPointGraph(const std::vector<double> &x, const std::vector<double> &y,
                    double A, double B, double C, double D) {
   if (x.empty() || y.empty()) {
     std::cerr
@@ -103,13 +132,12 @@ void plotLissajous(const std::vector<double> &x, const std::vector<double> &y,
     ticks.append(sf::Vertex(sf::Vector2f(px, xAxisY + 5), sf::Color::White));
 
     // Etichetta
-    std::ostringstream oss;
-    oss << std::fixed << std::setprecision(1) << val;
-    sf::Text t(oss.str(), font, 12);
+    sf::Text t(shortLabel(val), font, 12);
     t.setFillColor(sf::Color::White);
     t.setPosition(px - 10, xAxisY + 8);
     tickLabels.push_back(t);
   }
+  // Asse Y
   for (int i = 0; i <= numTicks; ++i) {
     double val = *minY + i * ((*maxY - *minY) / numTicks);
     float py = 800.0f - (margin + (val - *minY) * scaleY);
@@ -119,9 +147,7 @@ void plotLissajous(const std::vector<double> &x, const std::vector<double> &y,
     ticks.append(sf::Vertex(sf::Vector2f(yAxisX + 5, py), sf::Color::White));
 
     // Etichetta
-    std::ostringstream oss;
-    oss << std::fixed << std::setprecision(1) << val;
-    sf::Text t(oss.str(), font, 12);
+    sf::Text t(shortLabel(val), font, 12);
     t.setFillColor(sf::Color::White);
     t.setPosition(yAxisX - 35, py - 8);
     tickLabels.push_back(t);
@@ -249,9 +275,7 @@ void plotTimeEvolution(const std::vector<double> &t,
     ticks.append(sf::Vertex(sf::Vector2f(px, window.getSize().y - bottomMargin - 5), sf::Color::White));
     ticks.append(sf::Vertex(sf::Vector2f(px, window.getSize().y - bottomMargin + 5), sf::Color::White));
 
-    std::ostringstream oss;
-    oss << std::fixed << std::setprecision(1) << val;
-    sf::Text tLabel(oss.str(), font, 12);
+    sf::Text tLabel(shortLabel(val), font, 12);
     tLabel.setFillColor(sf::Color::White);
     tLabel.setPosition(px - 10, window.getSize().y - bottomMargin + 8);
     tickLabels.push_back(tLabel);
@@ -268,9 +292,7 @@ void plotTimeEvolution(const std::vector<double> &t,
     ticks.append(sf::Vertex(sf::Vector2f(leftMargin - 5, py), sf::Color::White));
     ticks.append(sf::Vertex(sf::Vector2f(leftMargin + 5, py), sf::Color::White));
 
-    std::ostringstream oss;
-    oss << std::fixed << std::setprecision(1) << val;
-    sf::Text yLabel(oss.str(), font, 12);
+    sf::Text yLabel(shortLabel(val), font, 12);
     yLabel.setFillColor(sf::Color::White);
     yLabel.setPosition(leftMargin - 45, py - 8); // posizionata per non toccare labelY
     tickLabels.push_back(yLabel);
