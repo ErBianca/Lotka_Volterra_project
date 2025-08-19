@@ -12,7 +12,7 @@ Implementazione in **C++** del modello matematico preda-predatore di Lotka-Volte
 - Compilatore **C++11** (o superiore).
 - **CMake** per la gestione della build.
 - [doctest](https://github.com/doctest/doctest) (header-only, incluso nel progetto).
-- Eventuali librerie grafiche se specificate in `graphic.cpp` / `graphic.hpp`.
+- Libreria grafica **SFML** necessaria per la parte grafica
 
 ## 🚀 Installazione e utilizzo
 Clona la repository ed esegui la build con CMake:
@@ -24,3 +24,4 @@ mkdir build && cd build
 cmake ..
 make
 ./Lotka_Volterra       # esegue la simulazione
+
