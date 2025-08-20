@@ -163,7 +163,7 @@ void pf::Simulation::writeResults() const {
   std::ofstream out("ValueList.txt");
   out << std::fixed << std::setprecision(6);
 
-  out << "TIME\tPREY(x)\tPREDATOR(y)\tH\n\n";
+  out << "TIME\t\tPREY(x)\t\tPREDATOR(y)\t\tH\n\n";
 
   // Scrive tutti i valori memorizzati in tabella
   for (size_t m = 0; m < data.x.size(); ++m) {
