@@ -1,29 +1,33 @@
 cmake_minimum_required(VERSION 3.10)
-project(LotkaVolterraProject)
+project(LotkaVolterraProject LANGUAGES CXX)
 
-# Usa C++17
+# Use C++17
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Trova SFML
+# Find SFML
 find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
 
-# File sorgente principali
+# --------------------------
+# Main application
+# --------------------------
 set(SOURCES
     main.cpp
     graphic.cpp
     lotka_volterra.cpp
 )
 
-# Aggiungi l'eseguibile principale
 add_executable(lotka_volterra_app ${SOURCES})
+target_link_libraries(lotka_volterra_app PRIVATE sfml-graphics sfml-window sfml-system)
 
-# Linka SFML
-target_link_libraries(lotka_volterra_app sfml-graphics sfml-window sfml-system)
+# Copy the font to the build directory (so the app can find it at runtime)
+configure_file(DejaVuSans.ttf DejaVuSans.ttf COPYONLY)
 
 # --------------------------
-# Se vuoi compilare i test
+# Tests
 # --------------------------
+enable_testing()
+
 set(TEST_SOURCES
     lotka_volterra_tests.cpp
     graphic.cpp
@@ -31,8 +35,7 @@ set(TEST_SOURCES
 )
 
 add_executable(lotka_volterra_tests ${TEST_SOURCES})
-target_link_libraries(lotka_volterra_tests sfml-graphics sfml-window sfml-system)
+target_link_libraries(lotka_volterra_tests PRIVATE sfml-graphics sfml-window sfml-system)
 
-
-# Copia il font nella cartella di build
-configure_file(DejaVuSans.ttf DejaVuSans.ttf COPYONLY)
+# Register the test with CTest
+add_test(NAME LotkaVolterraTests COMMAND lotka_volterra_tests)
