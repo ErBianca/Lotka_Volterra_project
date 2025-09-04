@@ -1,6 +1,7 @@
 #ifndef LOTKA_VOLTERRA_HPP
 #define LOTKA_VOLTERRA_HPP
 
+#include <limits>
 #include <vector>
 #include <fstream>
 #include <iostream>

@@ -1,41 +1,72 @@
-cmake_minimum_required(VERSION 3.10)
-project(LotkaVolterraProject LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.28) 
+project(progettopf VERSION 0.1.0)
 
-# Use C++17
-set(CMAKE_CXX_STANDARD 17)
+# abilita il supporto per i test, tra cui l'opzione BUILD_TESTING usata sotto
+include(CTest)
+
+# esporta il compilation database, utile per altri strumenti, a partire dall'editor
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# richiedi l'uso di C++20 (volendo anche C++23), senza estensioni non-standard offerte dal compilatore usato
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Find SFML
-find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
+# abilita warning
+string(APPEND CMAKE_CXX_FLAGS
+      " -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion"
+      " -Wshadow -Wimplicit-fallthrough -Wextra-semi -Wold-style-cast"
+      " -fno-omit-frame-pointer")
 
-# --------------------------
-# Main application
-# --------------------------
-set(SOURCES
-    main.cpp
-    graphic.cpp
+# abilita asserzioni della standard library
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_ASSERTIONS")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  string(APPEND CMAKE_CXX_FLAGS " -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE")
+endif()
+
+# abilita address sanitizer e undefined-behaviour sanitizer in Debug mode
+string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fsanitize=address,undefined")
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_SANITIZE_STD_ALLOCATOR")
+endif()
+string(APPEND CMAKE_EXE_LINKER_FLAGS_DEBUG " -fsanitize=address,undefined")
+
+# se usato, richiedi il componente graphics della libreria SFML (versione 2.6 in Ubuntu 24.04)
+find_package(SFML 2.6 COMPONENTS graphics REQUIRED)
+
+# dichiara un eseguibile chiamato "lotka_volterra_app", prodotto a partire dai file sorgente indicati
+add_executable(lotka_volterra_app 
+    main.cpp 
+    graphic.cpp 
     lotka_volterra.cpp
 )
 
-add_executable(lotka_volterra_app ${SOURCES})
-target_link_libraries(lotka_volterra_app PRIVATE sfml-graphics sfml-window sfml-system)
-
-# Copy the font to the build directory (so the app can find it at runtime)
-configure_file(DejaVuSans.ttf DejaVuSans.ttf COPYONLY)
-
-# --------------------------
-# Tests
-# --------------------------
-enable_testing()
-
-set(TEST_SOURCES
-    lotka_volterra_tests.cpp
-    graphic.cpp
-    lotka_volterra.cpp
+# Copia DejaVuSans.ttf nella cartella dove verrà generato l'eseguibile
+add_custom_command(TARGET lotka_volterra_app POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_SOURCE_DIR}/DejaVuSans.ttf"
+        $<TARGET_FILE_DIR:lotka_volterra_app>/DejaVuSans.ttf
 )
+# nel caso si usi SFML. analogamente per eventuali altre librerie
+target_link_libraries(lotka_volterra_app PRIVATE sfml-graphics)
 
-add_executable(lotka_volterra_tests ${TEST_SOURCES})
-target_link_libraries(lotka_volterra_tests PRIVATE sfml-graphics sfml-window sfml-system)
+# aggiungere eventuali altri eseguibili
 
-# Register the test with CTest
-add_test(NAME LotkaVolterraTests COMMAND lotka_volterra_tests)
+# il testing e' abilitato di default
+# per disabilitarlo, passare -DBUILD_TESTING=OFF a cmake durante la fase di configurazione
+if (BUILD_TESTING)
+
+  # aggiungi l'eseguibile lotka_volterra_tests
+  add_executable(lotka_volterra_tests 
+      lotka_volterra_tests.cpp 
+      graphic.cpp 
+      lotka_volterra.cpp
+  )
+  # nel caso si usi SFML. analogamente per eventuali altre librerie
+  target_link_libraries(lotka_volterra_tests PRIVATE sfml-graphics)
+
+  # aggiungi l'eseguibile lotka_volterra_tests alla lista dei test
+  add_test(NAME lotka_volterra_tests COMMAND lotka_volterra_tests)
+
+endif()

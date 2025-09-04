@@ -9,7 +9,7 @@ Simulation::Simulation(double newA, double newB, double newC, double newD,
 }
 
 // Imposta se utilizzare il metodo Runge-Kutta 4 (RK4) per l'evoluzione
-void pf::Simulation::setUseRK4(bool flag) { useRK4 = flag; }
+void Simulation::setUseRK4(bool flag) { useRK4 = flag; }
 
 // Getter per il vettore dei tempi
 const std::vector<double> &Simulation::gett() const { return t; }
@@ -45,8 +45,6 @@ void Simulation::initializeVectors() {
 
 // Calcola i nuovi valori di x, y e H dopo un intervallo dt usando la formula
 // semplificata
-#include <limits> // per std::numeric_limits
-
 void Simulation::evolve() {
   // Variabili relative rispetto al punto di equilibrio e_2
   double x_0_rel = x_0 / e2_x();
@@ -71,7 +69,7 @@ void Simulation::evolve() {
   // Calcolo H: in caso di estinzione è infinito
   double H_i;
   if (extinct_x || extinct_y) {
-    H_i = std::numeric_limits<double>::infinity(); // o NaN se preferisci
+    H_i = std::numeric_limits<double>::infinity(); 
   } else {
     H_i = -D * std::log(x_i) + C * x_i + B * y_i - A * std::log(y_i);
   }
@@ -86,11 +84,8 @@ void Simulation::evolve() {
   y_0 = y_i;
 }
 
-#include <limits> // per std::numeric_limits
-
-void pf::Simulation::evolveRK4() {
+void Simulation::evolveRK4() {
   // Definizione delle derivate dx/dt e dy/dt per il sistema di equazioni
-  // Lotka-Volterra
   auto dxdt = [this](double x, double y) { return A * x - B * x * y; };
   auto dydt = [this](double x, double y) { return C * x * y - D * y; };
 
@@ -141,7 +136,7 @@ void pf::Simulation::evolveRK4() {
   y_0 = y_next;
 }
 
-// Esegue la simulazione per n passi, scegliendo tra metodo semplice o RK4
+// Esegue la simulazione per n passi
 void Simulation::runSimulation(int n) {
   for (int i = 1; i <= n; ++i) {
     if (useRK4) {
@@ -153,8 +148,8 @@ void Simulation::runSimulation(int n) {
   }
 }
 
-// Scrive i dati temporali e delle popolazioni (x, y, H) su un file di testo
-void pf::Simulation::writeResults() const {
+// Scrive i dati temporali e delle popolazioni su file
+void Simulation::writeResults() const {
   if (data.x.empty() || t.empty()) {
     std::cout << "Nessun dato disponibile.\n";
     return;
@@ -165,7 +160,6 @@ void pf::Simulation::writeResults() const {
 
   out << "TIME\t\tPREY(x)\t\tPREDATOR(y)\t\tH\n\n";
 
-  // Scrive tutti i valori memorizzati in tabella
   for (size_t m = 0; m < data.x.size(); ++m) {
     out << t[m] << "\t" << data.x[m] << "\t" << data.y[m] << "\t" << data.H[m]
         << "\n";
@@ -174,25 +168,23 @@ void pf::Simulation::writeResults() const {
   out.close();
 }
 
-// Calcola statistiche minime, massime e medie per x, y e H e le scrive su file
-void pf::Simulation::computeStatistics() const {
+// Calcola statistiche minime, massime e medie
+void Simulation::computeStatistics() const {
   if (data.x.empty()) {
     std::cout << "Nessun dato disponibile.\n";
     return;
   }
 
-  // Trova minimo e massimo per x, y e H
   auto [min_x, max_x] = std::minmax_element(data.x.begin(), data.x.end());
   auto [min_y, max_y] = std::minmax_element(data.y.begin(), data.y.end());
   auto [min_H, max_H] = std::minmax_element(data.H.begin(), data.H.end());
 
-  // Calcola le medie
-  double mean_x =
-      std::accumulate(data.x.begin(), data.x.end(), 0.0) / data.x.size();
-  double mean_y =
-      std::accumulate(data.y.begin(), data.y.end(), 0.0) / data.y.size();
-  double mean_H =
-      std::accumulate(data.H.begin(), data.H.end(), 0.0) / data.H.size();
+  double mean_x = std::accumulate(data.x.begin(), data.x.end(), 0.0) / 
+                  static_cast<double>(data.x.size());
+  double mean_y = std::accumulate(data.y.begin(), data.y.end(), 0.0) / 
+                  static_cast<double>(data.y.size());
+  double mean_H = std::accumulate(data.H.begin(), data.H.end(), 0.0) / 
+                  static_cast<double>(data.H.size());
 
   std::ofstream out("Statistics.txt");
   out << std::fixed << std::setprecision(6);
@@ -216,17 +208,16 @@ void pf::Simulation::computeStatistics() const {
   out.close();
 }
 
-// Controlla la stabilità dell'integrale del moto H entro una certa tolleranza
-bool pf::Simulation::checkHStability(double tolerance) const {
+// Controlla la stabilità dell’integrale del moto
+bool Simulation::checkHStability(double tolerance) const {
   if (data.H.empty()) {
     std::cerr << "Nessun dato disponibile per controllare la stabilità.\n";
     return false;
   }
 
-  double H0 = data.H.front(); // valore iniziale di H
+  double H0 = data.H.front();
   double maxDeviation = 0.0;
 
-  // Calcola la massima deviazione relativa di H rispetto al valore iniziale
   for (double Hval : data.H) {
     double deviation = std::fabs(Hval - H0) / std::fabs(H0);
     if (deviation > maxDeviation) {
@@ -234,7 +225,6 @@ bool pf::Simulation::checkHStability(double tolerance) const {
     }
   }
 
-  // Scrive i risultati del controllo su file
   std::ofstream out("H_Stability.txt");
   out << std::fixed << std::setprecision(6);
   out << "H iniziale: " << H0 << "\n";
@@ -243,7 +233,6 @@ bool pf::Simulation::checkHStability(double tolerance) const {
   out << "Stabile: " << (maxDeviation <= tolerance ? "SI" : "NO") << "\n";
   out.close();
 
-  // Ritorna true se stabile, false altrimenti
   return maxDeviation <= tolerance;
 }
 

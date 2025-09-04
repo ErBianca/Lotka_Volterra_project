@@ -3,8 +3,8 @@
 #include "lotka_volterra.hpp"
 #include <cmath>
 
-TEST_CASE(
-    "Testing the simulation given the first set of parameters and initial values") {
+TEST_CASE("Testing the simulation given the first set of parameters and "
+          "initial values") {
 
   pf::Simulation sim1(1.1, 0.4, 0.1, 0.4, 80, 20, 0.001);
   sim1.initializeVectors();
@@ -77,8 +77,8 @@ TEST_CASE(
   }
 }
 
-TEST_CASE(
-    "Testing the simulation given the second set of parameters and initial values") {
+TEST_CASE("Testing the simulation given the second set of parameters and "
+          "initial values") {
 
   pf::Simulation sim2(1.2, 0.5, 0.2, 0.7, 25, 15, 0.001);
   sim2.initializeVectors();
@@ -151,8 +151,8 @@ TEST_CASE(
   }
 }
 
-TEST_CASE(
-    "testing the case in which the specie of preys goes extinct (followed by the predator specie)") {
+TEST_CASE("testing the case in which the specie of preys goes extinct "
+          "(followed by the predator specie)") {
 
   pf::Simulation sim3(0.6, 2.5, 0.3, 0.5, 8, 12, 0.001);
   sim3.initializeVectors();
@@ -162,8 +162,8 @@ TEST_CASE(
   CHECK(sim3.gety()[80000] == 0);
 }
 
-TEST_CASE(
-    "testing the case in which predators go extinct and preys increase indefinitely") {
+TEST_CASE("testing the case in which predators go extinct and preys increase "
+          "indefinitely") {
 
   pf::Simulation sim4(3.0, 0.005, 0.0000001, 20.5, 60, 5, 0.001);
   sim4.initializeVectors();
@@ -186,57 +186,56 @@ TEST_CASE("Testing equilibrium") {
 }
 
 TEST_CASE("Testing evolveRK4 with first parameter set") {
-    pf::Simulation sim6(1.1, 0.4, 0.1, 0.4, 80, 20, 0.001);
-    sim6.initializeVectors();
+  pf::Simulation sim6(1.1, 0.4, 0.1, 0.4, 80, 20, 0.001);
+  sim6.initializeVectors();
 
-    SUBCASE("Initial state") {
-        CHECK(sim6.getx()[0] == doctest::Approx(80));
-        CHECK(sim6.gety()[0] == doctest::Approx(20));
-        CHECK(sim6.getH()[0] == doctest::Approx(
-            -0.4 * std::log(80) + 0.1 * 80 + 0.4 * 20 - 1.1 * std::log(20)
-        ));
-    }
+  SUBCASE("Initial state") {
+    CHECK(sim6.getx()[0] == doctest::Approx(80));
+    CHECK(sim6.gety()[0] == doctest::Approx(20));
+    CHECK(sim6.getH()[0] == doctest::Approx(-0.4 * std::log(80) + 0.1 * 80 +
+                                            0.4 * 20 - 1.1 * std::log(20)));
+  }
 
-    SUBCASE("After one RK4 step") {
-        sim6.evolveRK4();
-        CHECK(sim6.getx()[1] == doctest::Approx(79.447485));
-        CHECK(sim6.gety()[1] == doctest::Approx(20.152023));
-        CHECK(sim6.getH()[1] == doctest::Approx(
-            -0.4 * std::log(sim6.getx()[1]) + 0.1 * sim6.getx()[1] +
-             0.4 * sim6.gety()[1] - 1.1 * std::log(sim6.gety()[1])
-        ));
-        CHECK(sim6.getx().size() == 2);
-        CHECK(sim6.gety().size() == 2);
-        CHECK(sim6.getH().size() == 2);
-    }
+  SUBCASE("After one RK4 step") {
+    sim6.evolveRK4();
+    CHECK(sim6.getx()[1] == doctest::Approx(79.447485));
+    CHECK(sim6.gety()[1] == doctest::Approx(20.152023));
+    CHECK(sim6.getH()[1] ==
+          doctest::Approx(-0.4 * std::log(sim6.getx()[1]) +
+                          0.1 * sim6.getx()[1] + 0.4 * sim6.gety()[1] -
+                          1.1 * std::log(sim6.gety()[1])));
+    CHECK(sim6.getx().size() == 2);
+    CHECK(sim6.gety().size() == 2);
+    CHECK(sim6.getH().size() == 2);
+  }
 
-    SUBCASE("After 10 RK4 steps") {
-        for (int i = 0; i < 10; ++i)
-            sim6.evolveRK4();
-        CHECK(sim6.getx().size() == 11);
-        CHECK(sim6.gety().size() == 11);
-        CHECK(sim6.getH().size() == 11);
-    }
+  SUBCASE("After 10 RK4 steps") {
+    for (int i = 0; i < 10; ++i)
+      sim6.evolveRK4();
+    CHECK(sim6.getx().size() == 11);
+    CHECK(sim6.gety().size() == 11);
+    CHECK(sim6.getH().size() == 11);
+  }
 }
 
 TEST_CASE("Testing evolveRK4 extinction scenario") {
-    pf::Simulation sim7(0.6, 2.5, 0.3, 0.5, 8, 12, 0.001);
-    sim7.initializeVectors();
+  pf::Simulation sim7(0.6, 2.5, 0.3, 0.5, 8, 12, 0.001);
+  sim7.initializeVectors();
 
-    for (int i = 0; i < 80000; ++i)
-        sim7.evolveRK4();
+  for (int i = 0; i < 80000; ++i)
+    sim7.evolveRK4();
 
-    CHECK(sim7.getx().back() == 0);
-    CHECK(sim7.gety().back() == 0);
+  CHECK(sim7.getx().back() == 0);
+  CHECK(sim7.gety().back() == 0);
 }
 
 TEST_CASE("Testing evolveRK4 predator extinction") {
-    pf::Simulation sim8(3.0, 0.5, 0.00000001, 200.5, 60, 5, 0.001);
-    sim8.initializeVectors();
+  pf::Simulation sim8(3.0, 0.5, 0.00000001, 200.5, 60, 5, 0.001);
+  sim8.initializeVectors();
 
-    for (int i = 0; i < 80000; ++i)
-        sim8.evolveRK4();
+  for (int i = 0; i < 80000; ++i)
+    sim8.evolveRK4();
 
-    CHECK(sim8.gety().back() == 0);
-    CHECK(sim8.getx().back() > 0); 
+  CHECK(sim8.gety().back() == 0);
+  CHECK(sim8.getx().back() > 0);
 }
